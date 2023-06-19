@@ -208,7 +208,7 @@ int main() {
         int c;
         
         initscr();
-        nodelay(stdscr, TRUE);
+        halfdelay(1);
         score = 0;
         ClearTable();
         gettimeofday(&before, NULL);
