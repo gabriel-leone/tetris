@@ -15,6 +15,14 @@ char GameOn = TRUE;
 suseconds_t timer = 500000; //half second
 
 typedef struct {
+    int biggest;
+    int lower;
+} scoreMarks;
+
+scoreMarks scoreBoard; 
+
+    
+typedef struct {
     char nome[100];
     int idade;
     int score;
@@ -133,7 +141,7 @@ void Halleluyah_Baby(){
     timer-=1000; score += 100*count;
 }
 
-void PrintTable(){
+void PrintTable(scoreMarks scoreBoard){
     char Buffer[ROWS][COLS] = {0};
     int i, j;
     for(i = 0; i < current.width ;i++){
@@ -149,7 +157,8 @@ void PrintTable(){
         }
         printw("\n");
     }
-    printw("\nScore: %d\n", score);
+    printw("\nScore: %d\nHighest Score: %d\nLowest Score: %d\n", score, scoreBoard.biggest, scoreBoard.lower);
+
 }
 
 void pause() {
@@ -192,7 +201,7 @@ void ManipulateCurrent(int action){
             break;
     }
     DeleteShape(temp);
-    PrintTable();
+    PrintTable(scoreBoard);
 }
 
 void ClearTable() {
@@ -207,6 +216,21 @@ void ClearTable() {
 
 int main() {
     char restartOption;
+    usuario newPlayer;
+    
+    scoreBoard.lower = 0;
+    scoreBoard.biggest = 0;
+    
+    printf("Bem-vindo ao Tetris! Para começar a jogar, entre com seu nome e idade.\n");
+    printf("Nome: ");
+    scanf("%s", newPlayer.nome);
+    while ( getchar() != '\n' ); //Limpar buffer
+    printf("\nIdade: ");
+    scanf("%d", &newPlayer.idade);
+    fflush(stdin); //Limpar buffer
+    while ( getchar() != '\n' ); //Limpar buffer
+
+    
     do {
         GameOn = true;
         srand(time(0));
@@ -219,7 +243,7 @@ int main() {
         ClearTable();
         gettimeofday(&before, NULL);
         GetNewShape();
-        PrintTable();
+        PrintTable(scoreBoard);
         while (GameOn) {
             if ((c = getch()) != ERR) {
                 ManipulateCurrent(c);
@@ -231,6 +255,19 @@ int main() {
             }
         }
         printw("\nGame over\n");
+        
+        //checa se o score foi maior que o ultimo do player, se foi, atribui ao score da struct.
+        if(score > newPlayer.score){
+            newPlayer.score = score;
+        }
+        
+        if(score > scoreBoard.biggest){
+            scoreBoard.biggest = score;
+        }
+        
+        if(score < scoreBoard.lower || scoreBoard.lower == 0){
+            scoreBoard.lower = score;
+        }
         
         printw("Do you want to restart? (y/n): ");
         refresh();
