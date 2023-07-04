@@ -15,6 +15,12 @@ char GameOn = TRUE;
 suseconds_t timer = 500000; //half second
 
 typedef struct {
+    char nome[100];
+    int idade;
+    int score;
+} usuario;
+
+typedef struct {
     char **array;
     int width, row, col;
 } Shape;
