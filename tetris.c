@@ -125,30 +125,38 @@ void WriteToTable(){
     }
 }
 
-void Halleluyah_Baby(){
-    int i, j, sum, count=0;
-    for(i=0;i<ROWS;i++){
+void Halleluyah_Baby() {
+    int i, j, sum, count = 0;
+    int lineCount = 0; // Count of lines cleared at once
+    for (i = 0; i < ROWS; i++) {
         sum = 0;
-        int contagem = 0;
-        for(j=0;j< COLS;j++) {
-            sum+=Table[i][j];
+        for (j = 0; j < COLS; j++) {
+            sum += Table[i][j];
         }
-        if(sum==COLS){
+        if (sum == COLS) {
             count++;
-            contagem++;
-            if (contagem >= 2) {
-                menu.score = menu.score + contagem*50;
-            }
             int l, k;
-            for(k = i;k >=1;k--)
-                for(l=0;l<COLS;l++)
-                    Table[k][l]=Table[k-1][l];
-            for(l=0;l<COLS;l++)
-                Table[k][l]=0;
+            for (k = i; k >= 1; k--)
+                for (l = 0; l < COLS; l++)
+                    Table[k][l] = Table[k - 1][l];
+            for (l = 0; l < COLS; l++)
+                Table[k][l] = 0;
         }
     }
-    timer-=1000; menu.score += 100*count;
+    
+    if (count > 0) {
+        lineCount = count;
+        menu.score += 100 * count; // Bonus points for multiple line clears
+    }
+
+    // Additional bonus points based on the number of lines cleared at once
+    if (lineCount >= 2) {
+        menu.score += lineCount * 50;
+    }
+    
+    timer -= 1000;
 }
+
 
 void PrintTable(scoreMarks scoreBoard){
     char Buffer[ROWS][COLS] = {0};
