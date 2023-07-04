@@ -10,9 +10,18 @@
 #define FALSE 0
 
 char Table[ROWS][COLS] = {0};
-int score = 0;
-char GameOn = TRUE;
+
 suseconds_t timer = 500000; //half second
+
+typedef struct {
+    char GameOn;
+    char restartOption;
+    int score;
+} gameOptions;
+
+gameOptions menu;
+
+
 
 typedef struct {
     int biggest;
@@ -90,7 +99,7 @@ void GetNewShape(){ //returns random shape
     DeleteShape(current);
     current = new_shape;
     if(!CheckPosition(current)){
-        GameOn = FALSE;
+        menu.GameOn = FALSE;
     }
 }
 
@@ -128,7 +137,7 @@ void Halleluyah_Baby(){
             count++;
             contagem++;
             if (contagem >= 2) {
-                score = score + contagem*50;
+                menu.score = menu.score + contagem*50;
             }
             int l, k;
             for(k = i;k >=1;k--)
@@ -138,7 +147,7 @@ void Halleluyah_Baby(){
                 Table[k][l]=0;
         }
     }
-    timer-=1000; score += 100*count;
+    timer-=1000; menu.score += 100*count;
 }
 
 void PrintTable(scoreMarks scoreBoard){
@@ -157,7 +166,7 @@ void PrintTable(scoreMarks scoreBoard){
         }
         printw("\n");
     }
-    printw("\nScore: %d\nHighest Score: %d\nLowest Score: %d\n", score, scoreBoard.biggest, scoreBoard.lower);
+    printw("\nScore: %d\nHighest Score: %d\nLowest Score: %d\n", menu.score, scoreBoard.biggest, scoreBoard.lower);
 
 }
 
@@ -215,9 +224,10 @@ void ClearTable() {
 
 
 int main() {
-    char restartOption;
-    usuario newPlayer;
     
+    usuario newPlayer;
+    menu.GameOn = TRUE;
+    menu.score = 0;
     scoreBoard.lower = 0;
     scoreBoard.biggest = 0;
     
@@ -232,19 +242,19 @@ int main() {
 
     
     do {
-        GameOn = true;
+        menu.GameOn = true;
         srand(time(0));
         struct timeval before, after;
         int c;
         
         initscr();
         halfdelay(1);
-        score = 0;
+        menu.score = 0;
         ClearTable();
         gettimeofday(&before, NULL);
         GetNewShape();
         PrintTable(scoreBoard);
-        while (GameOn) {
+        while (menu.GameOn) {
             if ((c = getch()) != ERR) {
                 ManipulateCurrent(c);
             }
@@ -257,23 +267,23 @@ int main() {
         printw("\nGame over\n");
         
         //checa se o score foi maior que o ultimo do player, se foi, atribui ao score da struct.
-        if(score > newPlayer.score){
-            newPlayer.score = score;
+        if(menu.score > newPlayer.score){
+            newPlayer.score = menu.score;
         }
         
-        if(score > scoreBoard.biggest){
-            scoreBoard.biggest = score;
+        if(menu.score > scoreBoard.biggest){
+            scoreBoard.biggest = menu.score;
         }
         
-        if(score < scoreBoard.lower || scoreBoard.lower == 0){
-            scoreBoard.lower = score;
+        if(menu.score < scoreBoard.lower || scoreBoard.lower == 0){
+            scoreBoard.lower = menu.score;
         }
         
         printw("Do you want to restart? (y/n): ");
         refresh();
-        restartOption = getchar();
+        menu.restartOption = getchar();
         clear();
-    } while (restartOption == 'y' || restartOption == 'Y');
+    } while (menu.restartOption == 'y' || menu.restartOption == 'Y');
     endwin();
     DeleteShape(current);
     return 0;
